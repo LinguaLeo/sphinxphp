@@ -150,6 +150,7 @@ class SphinxClient
     public $mbenc;         // stored mbstring encoding
     public $arrayresult;   // whether $result["matches"] should be a hash or an array
     public $timeout;       // connect timeout
+    public $socketTimeout; // socket timeout
 
     /**
      * Create a new client object and fill defaults
@@ -196,6 +197,7 @@ class SphinxClient
         $this->mbenc         = '';
         $this->arrayresult   = false;
         $this->timeout       = 0;
+        $this->socketTimeout = 0;
     }
 
     /**
@@ -310,6 +312,26 @@ class SphinxClient
     }
 
     /**
+     * Set socket timeout
+     *
+     * @param integer $timeout
+     *
+     * @return SphinxClient
+     * @throws \InvalidArgumentException When $timeout is negative
+     */
+    public function setSocketTimeout($timeout)
+    {
+        $timeout = intval($timeout);
+        if ($timeout < 0) {
+            throw new \InvalidArgumentException('Timeout cannot be negative.');
+        }
+
+        $this->socketTimeout = $timeout;
+
+        return $this;
+    }
+
+    /**
      * Write message to socket
      *
      * @param resource $handle
@@ -401,6 +423,10 @@ class SphinxClient
             $this->connerror = true;
 
             return false;
+        }
+
+        if ($this->socketTimeout > 0) {
+            stream_set_timeout($fp, $this->socketTimeout);
         }
 
         // send client version

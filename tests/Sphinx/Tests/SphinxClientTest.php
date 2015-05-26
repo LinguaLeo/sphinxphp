@@ -164,6 +164,13 @@ class SphinxClientTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($sphinx->timeout, 10);
     }
 
+    public function testSetSocketTimeout()
+    {
+        $sphinx = new SphinxClient();
+        $sphinx->setSocketTimeout(10);
+        $this->assertSame($sphinx->socketTimeout, 10);
+    }
+
     public function testSetLimits()
     {
         $sphinx = new SphinxClient();
